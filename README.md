@@ -1,22 +1,4 @@
-# Week 6 Example 1 — Vertical Scrolling Shoot 'Em Up
-
-## What This Example Demonstrates
-
-> **Note for students:** This section is included in example files only to help you study. Do not include it in your Side Quest submissions.
-
-This example introduces a vertical scrolling shoot 'em up. The world scrolls upward as the player advances. Dark square obstacles are loaded from a JSON file and scroll with the world — hitting one causes damage and a bounce. Orange blob enemies spawn from the top (max 3 at once) and move toward the player. Includes a full UI, health system, invincibility frames, and sound hooks.
-
-- **World scrolling** — `scrollY` advances by `SCROLL_SPEED` each frame; enemies and obstacles move down by the same amount to stay in world coordinates
-- **Obstacles from JSON** — `data/obstacles.json` stores each obstacle's world position and size; loaded in `preload()` with `loadJSON()`; built into objects in `setup()`
-- **Circle-rectangle collision** — finds the closest point on the rectangle to the player centre using `constrain()`; if the distance is less than the player radius, a hit is registered
-- **Bounce on hit** — a normalised direction vector away from the obstacle is calculated and stored as `bounceVX` / `bounceVY`; applied and decayed each frame in `applyBounce()` so the player regains control quickly
-- **Max enemy cap** — `spawnEnemies()` checks `enemies.length` before spawning; never more than `MAX_ENEMIES` on screen at once
-- **Scrolling background shapes** — generated in `setup()` with random world Y positions and scroll multipliers; shapes with a lower multiplier scroll slower, giving a sense of depth
-- **Direction tracking** — `player.direction` stores the last direction moved as an `{ x, y }` unit vector; used to aim bullets and show the direction indicator dot
-- **Shoot cooldown** — `player.shootTimer` counts down each frame; same pattern as invincibility frames
-- **Health system with `lerpColor()`** — health bar shifts from green to red as health decreases
-- **Scroll progress bar** — vertical bar on the right edge; `map()` converts `scrollY` to a fill height
-- **Sound hooks** — all sound calls are commented out throughout; uncomment and add file paths to add audio
+# Sidequest 6 — Vertical Scrolling Shoot 'Em Up
 
 ## Setup and Interaction Instructions
 
@@ -46,8 +28,16 @@ Open `data/obstacles.json` to change obstacle positions and sizes. Each entry ha
 
 ## Assets
 
-No external assets used. All visuals are generated with p5.js.
+| File                                | Source
+| ----------------------------------- | -----------------------------------
+| 'assets/images/w6background.png' [1]| Magnific - Cartoon forest at sunset a nature inspired landscape in dark beige and green
+| 'assets/images/villagercharacter.png' [2] | Flaticon - Villager free icon
+| 'assets/sounds/backgroundmusic.mp3' [3] | THRLL (YouTube) - Dark Ambient - Horror Background Music No Copyright
 
 ## References
 
-N/A
+[1] Magnific AI. 2026. Cartoon forest sunset nature-inspired landscape dark beige green. Premium AI Image. Retrieved June 17, 2026 from https://www.magnific.com/premium-ai-image/cartoon-forest-sunset-natureinspired-landscape-dark-beige-green_163820150.htm
+
+[2] Flaticon. 2026. Villager Free Icon. Retrieved June 17, 2026 from https://www.flaticon.com/free-icon/villager_9194281
+
+[3] YouTube. 2026. oO0DvpIWhd0 Video Playlist. Retrieved June 17, 2026 from https://www.youtube.com/watch?v=oO0DvpIWhd0&list=RDoO0DvpIWhd0&start_radio=1

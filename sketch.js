@@ -51,6 +51,9 @@ let obstacles = []; // built from JSON in setup()
 // BACKGROUND SHAPES
 // ------------------------------------------------------------
 let bgShapes = [];
+let bgImg;
+let playerImg;
+let music;
 
 // ------------------------------------------------------------
 // PLAYER
@@ -102,6 +105,20 @@ let gameState = STATE_PLAY;
 function preload() {
   obstacleData = loadJSON("data/obstacles.json");
 
+  // Load background image for the level
+  bgImg = loadImage("assets/images/w6background.png");
+  // Load player sprite (fallback to procedural blob if missing)
+  playerImg = loadImage(
+    "assets/images/villagercharacter.png",
+    () => {},
+    () => {
+      playerImg = null;
+    }
+  );
+  // Load background music (optional)
+  music = loadSound("assets/sounds/backgroundmusic.mp3", () => {}, () => {
+    music = null;
+  });
   // Uncomment to load sounds:
   // shootSound     = loadSound("assets/sounds/shoot.wav");
   // hitSound       = loadSound("assets/sounds/hit.wav");
@@ -144,14 +161,14 @@ function setup() {
   }
 
   // Uncomment to start music:
-  // music.loop();
+  if (music) music.loop();
 }
 
 // ============================================================
 // draw()
 // ============================================================
 function draw() {
-  background(20);
+  if (bgImg) image(bgImg, 0, 0, width, height);
 
   if (gameState === STATE_PLAY) {
     scrollWorld();
@@ -316,7 +333,7 @@ function checkObstaclePlayerCollision() {
 
       if (player.health <= 0) {
         gameState = STATE_OVER;
-        // music.stop();
+        if (music) music.stop();
       }
 
       break;
@@ -478,7 +495,7 @@ function checkEnemyPlayerCollision() {
 
       if (player.health <= 0) {
         gameState = STATE_OVER;
-        // music.stop();
+        if (music) music.stop();
       }
       break;
     }
@@ -504,7 +521,7 @@ function checkLevelComplete() {
   if (scrollY >= WORLD_LENGTH) {
     gameState = STATE_WIN;
     // winSound.play();
-    // music.stop();
+    if (music) music.stop();
   }
 }
 
@@ -556,37 +573,43 @@ function drawEnemies() {
 // ------------------------------------------------------------
 function drawPlayer() {
   if (player.invincible && floor(player.invincibleTimer / 6) % 2 === 0) return;
-
   push();
-  fill(0, 200, 180);
-  noStroke();
+  if (playerImg) {
+    imageMode(CENTER);
+    // Scale image to roughly match the blob radius
+    let size = player.r * 2.4;
+    image(playerImg, player.x, player.y, size, size);
+  } else {
+    fill(0, 200, 180);
+    noStroke();
 
-  beginShape();
-  let numPoints = 48;
-  for (let i = 0; i < numPoints; i++) {
-    let angle = (TWO_PI / numPoints) * i;
-    let noiseVal = noise(
-      cos(angle) * 0.8 + player.blobT,
-      sin(angle) * 0.8 + player.blobT
+    beginShape();
+    let numPoints = 48;
+    for (let i = 0; i < numPoints; i++) {
+      let angle = (TWO_PI / numPoints) * i;
+      let noiseVal = noise(
+        cos(angle) * 0.8 + player.blobT,
+        sin(angle) * 0.8 + player.blobT
+      );
+      let r = player.r + map(noiseVal, 0, 1, -6, 6);
+      vertex(player.x + cos(angle) * r, player.y + sin(angle) * r);
+    }
+    endShape(CLOSE);
+
+    fill(10);
+    ellipse(player.x - 7, player.y - 5, 7, 7);
+    ellipse(player.x + 7, player.y - 5, 7, 7);
+
+    fill(255);
+    ellipse(
+      player.x + player.direction.x * (player.r - 4),
+      player.y + player.direction.y * (player.r - 4),
+      8
     );
-    let r = player.r + map(noiseVal, 0, 1, -6, 6);
-    vertex(player.x + cos(angle) * r, player.y + sin(angle) * r);
+
+    player.blobT += 0.015;
   }
-  endShape(CLOSE);
-
-  fill(10);
-  ellipse(player.x - 7, player.y - 5, 7, 7);
-  ellipse(player.x + 7, player.y - 5, 7, 7);
-
-  fill(255);
-  ellipse(
-    player.x + player.direction.x * (player.r - 4),
-    player.y + player.direction.y * (player.r - 4),
-    8
-  );
-
   pop();
-  player.blobT += 0.015;
 }
 
 // ------------------------------------------------------------
@@ -645,7 +668,7 @@ function drawHUD() {
 // drawWinScreen()
 // ------------------------------------------------------------
 function drawWinScreen() {
-  background(20);
+  if (bgImg) image(bgImg, 0, 0, width, height);
   fill(255);
   textAlign(CENTER);
   textSize(52);
@@ -664,7 +687,7 @@ function drawWinScreen() {
 // drawGameOver()
 // ------------------------------------------------------------
 function drawGameOver() {
-  background(20);
+  if (bgImg) image(bgImg, 0, 0, width, height);
   fill(255);
   textAlign(CENTER);
   textSize(52);
@@ -702,5 +725,6 @@ function keyPressed() {
     player.bounceVY = 0;
 
     // music.loop();
+    if (music) music.loop();
   }
 }
